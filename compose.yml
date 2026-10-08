@@ -1,0 +1,16 @@
+services:
+  mnemosyne:
+    build: .
+    container_name: mnemosyne
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:8765:8765"
+
+    volumes:
+      - ./data:/data
+
+    environment:
+      MNEMOSYNE_DATA_DIR: /data
+      MNEMOSYNE_MCP_TOKEN: ${MNEMOSYNE_MCP_TOKEN:?set MNEMOSYNE_MCP_TOKEN in .env}
+      MNEMOSYNE_MCP_ALLOWED_HOSTS: "127.0.0.1:8765,localhost:8765"
