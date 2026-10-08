@@ -69,8 +69,22 @@ claude mcp remove --scope user mnemosyne
 
 `embeddings` extra で `fastembed` と `sqlite-vec` が入るため、ベクトル検索が有効です(`sqlite-vec` は extra に含まれるので個別の `pip install` は不要)。
 
-- 埋め込みモデルは初回利用時にダウンロードされ、`data/cache/fastembed` に保存されます(約 65MB)。再ビルドしても再ダウンロードされません。
-- 既定のモデルは英語向けの `BAAI/bge-small-en-v1.5` です。変更する場合は `compose.yml` の `environment` に `MNEMOSYNE_EMBEDDING_MODEL` を指定します。
+- 埋め込みモデルは日本語に強い多言語モデル `intfloat/multilingual-e5-large`(1024 次元)です。`compose.yml` の `MNEMOSYNE_EMBEDDING_MODEL` で指定しています。fastembed には日本語専用モデルがないため、これを選んでいます。
+- E5 系モデルは接頭辞が必要なので、`MNEMOSYNE_EMBEDDING_QUERY_PREFIX="query: "` と `MNEMOSYNE_EMBEDDING_DOC_PREFIX="passage: "` も設定しています。
+- モデルは初回利用時にダウンロードされ、`data/cache/fastembed` に保存されます(約 2.2GB、初回は数分かかります)。再ビルドしても再ダウンロードされません。
+- 実行時のメモリ使用量は約 1.6GB です。
+
+### モデルを変えるとき
+
+`data/config.yaml` は初回起動時に環境変数から生成され、以後は環境変数より優先されます。そのため、既存の `data/` があるときは `compose.yml` の変更だけでは反映されません。次の手順で切り替えます。
+
+```bash
+docker compose up -d
+docker compose exec mnemosyne mnemosyne config set embedding_model <モデル名>
+docker compose exec mnemosyne mnemosyne config set embedding_dim <次元数>
+docker compose exec mnemosyne mnemosyne reindex --yes
+docker compose restart
+```
 
 ## 運用
 

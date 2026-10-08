@@ -14,3 +14,7 @@ services:
       MNEMOSYNE_DATA_DIR: /data
       MNEMOSYNE_MCP_TOKEN: ${MNEMOSYNE_MCP_TOKEN:?set MNEMOSYNE_MCP_TOKEN in .env}
       MNEMOSYNE_MCP_ALLOWED_HOSTS: "127.0.0.1:8765,localhost:8765"
+      # Multilingual (Japanese-capable) embeddings; E5 models need these prefixes.
+      MNEMOSYNE_EMBEDDING_MODEL: intfloat/multilingual-e5-large
+      MNEMOSYNE_EMBEDDING_QUERY_PREFIX: "query: "
+      MNEMOSYNE_EMBEDDING_DOC_PREFIX: "passage: "
