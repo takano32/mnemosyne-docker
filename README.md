@@ -6,10 +6,10 @@
 
 | ファイル | 内容 |
 | --- | --- |
-| `Dockerfile` | `mnemosyne-memory[mcp]` を入れて `mnemosyne mcp --transport sse` を起動 |
+| `Dockerfile` | `mnemosyne-memory[mcp,embeddings]` を入れて `mnemosyne mcp --transport sse` を起動 |
 | `compose.yml` | ポート `127.0.0.1:8765` を公開し、`./data` を `/data` にマウント |
 | `.env` | 認証トークン `MNEMOSYNE_MCP_TOKEN`(Git 管理しないこと) |
-| `data/` | メモリの保存先 |
+| `data/` | メモリの保存先(埋め込みモデルのキャッシュ `data/cache/fastembed` を含む) |
 
 ## セットアップ
 
@@ -64,6 +64,13 @@ claude mcp remove --scope user mnemosyne
 - **トークンは必須**: コンテナ内では `0.0.0.0` にバインドする必要があり、mnemosyne は非ループバックへのバインド時に `MNEMOSYNE_MCP_TOKEN` がないと起動を拒否します。
 - **公開範囲はローカルのみ**: ホスト側は `127.0.0.1:8765` にだけ公開しています。
 - **`MNEMOSYNE_MCP_ALLOWED_HOSTS`**: `compose.yml` に残っていますが、3.15.1 では参照されておらず効果がありません。
+
+## ベクトル検索
+
+`embeddings` extra で `fastembed` と `sqlite-vec` が入るため、ベクトル検索が有効です(`sqlite-vec` は extra に含まれるので個別の `pip install` は不要)。
+
+- 埋め込みモデルは初回利用時にダウンロードされ、`data/cache/fastembed` に保存されます(約 65MB)。再ビルドしても再ダウンロードされません。
+- 既定のモデルは英語向けの `BAAI/bge-small-en-v1.5` です。変更する場合は `compose.yml` の `environment` に `MNEMOSYNE_EMBEDDING_MODEL` を指定します。
 
 ## 運用
 

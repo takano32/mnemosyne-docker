@@ -1,9 +1,10 @@
 FROM python:3.14-slim
 
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir --upgrade "mnemosyne-memory[mcp]"
+    && pip install --no-cache-dir --upgrade "mnemosyne-memory[mcp,embeddings]"
 
-ENV MNEMOSYNE_DATA_DIR=/data
+ENV MNEMOSYNE_DATA_DIR=/data \
+    MNEMOSYNE_FASTEMBED_CACHE_DIR=/data/cache/fastembed
 
 RUN mkdir -p /data
 
